@@ -32,6 +32,8 @@ String normalisedTitle = n.normalise(input);
 - "Best match" means the target with the highest q. If no target scores above 0.0, `normalise`
   returns "" rather than null or an exception, so the brief's `String` signature and sample code
   work unchanged.
+- When several targets share the highest q, the first in target-title order wins, so the result is
+  deterministic.
 
 ## Decisions
 

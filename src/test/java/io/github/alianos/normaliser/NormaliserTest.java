@@ -23,4 +23,11 @@ class NormaliserTest {
     void returnsEmptyWhenNoTargetMatches() {
         assertEquals("", new Normaliser().normalise("Plumber"));
     }
+
+    // TODO: relies on today's word coverage scoring both targets 0.5; nothing here asserts the
+    // tie. Rework once targets and scoring are injectable, so the tie can be set up explicitly.
+    @Test
+    void prefersTheFirstTargetOnATie() {
+        assertEquals("Software engineer", new Normaliser().normalise("Software quantity"));
+    }
 }
