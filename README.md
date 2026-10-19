@@ -82,3 +82,6 @@ are educated guesses rather than findings, and real data could overturn any of t
   ("Ingénieur" doesn't match "ingenieur"), composed and decomposed forms of the same character
   aren't unified, case folding is plain lowercasing (so "STRASSE" doesn't match "Straße"), and
   non-English titles aren't translated.
+- The scoring isn't tuned. Changes such as a different similarity floor can't be shown to improve
+  results without a labelled sample of real titles, so they're left until one exists. For example,
+  the 0.75 floor lets "Quality manager" match Quantity surveyor.
