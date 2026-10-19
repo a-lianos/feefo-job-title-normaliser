@@ -32,11 +32,15 @@ public class Normaliser {
 
     /**
      * Returns the target title with the highest quality score q for the input,
-     * or "" when no target scores above 0.0.
+     * or "" when no target scores above 0.0. Null or blank input returns "" without
+     * consulting the strategy.
      *
      * @throws IllegalStateException if the strategy returns a q outside [0.0, 1.0]
      */
     public String normalise(String input) {
+        if (input == null || input.isBlank()) {
+            return "";
+        }
         return targetTitles.stream()
                 .map(target -> new ScoredTitle(target, score(input, target)))
                 .filter(scored -> scored.q() > 0.0)

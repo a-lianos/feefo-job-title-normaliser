@@ -8,6 +8,8 @@ public interface ScoringStrategy {
 
     /**
      * Returns the quality score q, from 0.0 (no match) to 1.0 (perfect match).
+     *
+     * @param inputTitle never null or blank; the caller filters those out
      */
     double score(String inputTitle, String targetTitle);
 }

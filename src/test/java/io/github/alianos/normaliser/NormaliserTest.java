@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class NormaliserTest {
@@ -45,6 +46,17 @@ class NormaliserTest {
         Normaliser normaliser = new Normaliser(TARGETS, (input, target) -> 0.0);
 
         assertEquals("", normaliser.normalise("anything"));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   ", "\t\n"})
+    void returnsEmptyForNullOrBlankInputWithoutCallingTheStrategy(String input) {
+        Normaliser normaliser = new Normaliser(TARGETS, (in, target) -> {
+            throw new AssertionError("strategy called with \"" + in + "\"");
+        });
+
+        assertEquals("", normaliser.normalise(input));
     }
 
     @Test

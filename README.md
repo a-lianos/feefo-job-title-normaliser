@@ -42,6 +42,9 @@ against each other while `Normaliser` itself doesn't change.
   work unchanged.
 - Target list order sets the priority on ties: when several targets share the highest q, the first
   in the list wins, so the result is deterministic.
+- Null or blank input returns "", the same as no match, rather than throwing: free-text fields are
+  often empty, and normalising one shouldn't crash. `Normaliser` checks this before scoring, so
+  strategies never see null or blank input.
 
 ## Decisions
 
