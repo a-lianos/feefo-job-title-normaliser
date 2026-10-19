@@ -100,9 +100,10 @@ be a new `ScoringStrategy` or mapping, with no change to `Normaliser`.
 ## Next steps
 
 - Collect a labelled sample of real titles. Then, build an evaluation harness that can test
-  how changes affect the whole scope. Use the harness to to tune the similarity floor and to choose
+  how changes affect the whole scope. Use the harness to tune the similarity floor and to choose
   between richer strategies such as a title dictionary, a stemmer or semantic matching.
 - The no-match threshold is fixed in `Normaliser` (q > 0.0), so each strategy must return exactly
   0.0 for no match. A shared, configurable threshold may be worth adding if more strategies need
-  one. A QualityScore should also be returned instead of a double; that would prevent having to 
-  throw an error from the normaliser, as errors would have to be handled inside the ScoringStrategy.
+  one. Strategies could also return a `QualityScore` value that checks its own range when created,
+  instead of a bare double. An out-of-range q would then fail inside the strategy that produced it,
+  and `Normaliser` would no longer need its own range check.
