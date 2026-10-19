@@ -3,8 +3,10 @@ package io.github.alianos.normaliser.scoring;
 import static io.github.alianos.normaliser.scoring.Tokeniser.words;
 import static java.util.Map.entry;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,6 +14,8 @@ import java.util.Objects;
  * Adds the target words that input words stand for to the input, then lets another strategy score
  * it. For example, with "python" mapped to "software", "Python engineer" is scored as
  * "Python engineer software". Input words must match a mapping key exactly, ignoring case.
+ * Unlike title words, mapping words keep '#' and '+', so "C#" and "C++" can be mapped without
+ * also mapping a lone "C".
  */
 public class WordMappingStrategy implements ScoringStrategy {
 
@@ -46,8 +50,7 @@ public class WordMappingStrategy implements ScoringStrategy {
 
     /**
      * Creates a strategy with the given mapping. Each key is an input word, and its value is the
-     * space-separated target words it also counts as. Keys and values are split into words the same
-     * way as titles, so "C#" and "C++" are both the key "c".
+     * space-separated target words it also counts as.
      *
      * @throws NullPointerException if the mapping or the delegate is null
      * @throws IllegalArgumentException if a key isn't exactly one word or a value has no words
@@ -57,7 +60,7 @@ public class WordMappingStrategy implements ScoringStrategy {
         Objects.requireNonNull(mapping, "mapping");
         Map<String, String> wordMapping = new HashMap<>();
         mapping.forEach((key, value) -> {
-            List<String> keyWords = words(key);
+            List<String> keyWords = mappingWords(key);
             List<String> valueWords = words(value);
             if (keyWords.size() != 1) {
                 throw new IllegalArgumentException("mapping key must be one word: \"" + key + "\"");
@@ -74,12 +77,18 @@ public class WordMappingStrategy implements ScoringStrategy {
     @Override
     public double score(String inputTitle, String targetTitle) {
         StringBuilder mappedTitle = new StringBuilder(inputTitle);
-        for (String inputWord : words(inputTitle)) {
+        for (String inputWord : mappingWords(inputTitle)) {
             String mappedWords = mapping.get(inputWord);
             if (mappedWords != null) {
                 mappedTitle.append(' ').append(mappedWords);
             }
         }
         return delegate.score(mappedTitle.toString(), targetTitle);
+    }
+
+    private static List<String> mappingWords(String text) {
+        return Arrays.stream(text.toLowerCase(Locale.ROOT).split("[^\\p{L}\\p{N}#+]+"))
+                .filter(word -> !word.isEmpty())
+                .toList();
     }
 }

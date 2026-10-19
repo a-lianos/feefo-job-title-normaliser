@@ -42,7 +42,7 @@ class NormaliserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Plumber", "!!!", "Engineering"})
+    @ValueSource(strings = {"Plumber", "!!!", "Engineering", "C-suite executive"})
     void returnsEmptyWhenNoTargetMatches(String input) {
         assertEquals("", new Normaliser().normalise(input));
     }

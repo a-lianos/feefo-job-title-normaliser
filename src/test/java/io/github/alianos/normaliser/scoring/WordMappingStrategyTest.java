@@ -43,6 +43,15 @@ class WordMappingStrategyTest {
     }
 
     @Test
+    void keepsHashAndPlusInMappingKeys() {
+        Map<String, String> mapping = Map.of("C#", "software", "C++", "software");
+
+        new WordMappingStrategy(mapping, recordingDelegate).score("C#/C++ engineer, C-suite", "Software engineer");
+
+        assertEquals("C#/C++ engineer, C-suite software software", delegateInput);
+    }
+
+    @Test
     void returnsTheDelegatesScore() {
         assertEquals(0.5, new WordMappingStrategy(MAPPING, recordingDelegate).score("dev", "Software engineer"));
     }
