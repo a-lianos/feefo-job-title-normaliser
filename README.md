@@ -37,6 +37,9 @@ against each other while `Normaliser` itself doesn't change.
 
 ## Assumptions
 
+Without a large database of classified example titles to test against, the matching rules below
+are educated guesses rather than findings, and real data could overturn any of them.
+
 - "Best match" means the target with the highest q. If no target scores above 0.0, `normalise`
   returns "" rather than null or an exception, so the brief's `String` signature and sample code
   work unchanged.
