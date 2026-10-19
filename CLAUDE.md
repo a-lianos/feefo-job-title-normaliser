@@ -1,0 +1,23 @@
+# Job Title Normaliser
+
+Java library for a technical assessment: `Normaliser.normalise(String)` maps a free-text job title
+to the best-matching target title ("Architect", "Software engineer", "Quantity surveyor",
+"Accountant"), using an internal quality score q in [0.0, 1.0].
+
+Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
+
+## Commands
+
+- `./mvnw test`: run the unit tests
+- `./mvnw clean package`: full build
+
+## Conventions
+
+- Test first (red, green, refactor). Keep every existing test green.
+- Small focused changes; one commit per step.
+- British spelling in names and docs (normaliser, tokeniser).
+- Comments only on public interfaces or to explain a non-obvious why.
+- When a step makes an assumption about behaviour, add one bullet to the README's "Assumptions"
+  section in the same commit.
+- Pragmatism over cleverness: no speculative abstractions, no features the step didn't ask for.
+- Use `tmp/` (git-ignored) for scratch files.
