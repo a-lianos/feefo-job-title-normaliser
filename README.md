@@ -18,9 +18,20 @@ On Windows, use `mvnw.cmd` instead of `./mvnw`.
 
 ## Usage
 
+```java
+Normaliser n = new Normaliser();
+String input = "Java engineer";
+String normalisedTitle = n.normalise(input);
+// output normalisedTitle
+```
+
 ## Design
 
 ## Assumptions
+
+- "Best match" means the target with the highest q. If no target scores above 0.0, `normalise`
+  returns "" rather than null or an exception, so the brief's `String` signature and sample code
+  work unchanged.
 
 ## Decisions
 

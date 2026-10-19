@@ -14,7 +14,7 @@ Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
 ## Conventions
 
 - Test first (red, green, refactor). Keep every existing test green.
-- Small focused changes; one commit per step.
+- Small focused changes; one commit per step. Stage the files, but don't commit until asked.
 - British spelling in names and docs (normaliser, tokeniser).
 - Comments only on public interfaces or to explain a non-obvious why.
 - When a step makes an assumption about behaviour, add one bullet to the README's "Assumptions"
