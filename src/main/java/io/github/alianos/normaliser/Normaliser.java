@@ -26,8 +26,9 @@ public class Normaliser {
      * or "" when no target scores above 0.0.
      */
     public String normalise(String input) {
+        Set<String> inputWords = Set.copyOf(Arrays.asList(words(input)));
         return targetTitles.stream()
-                .map(target -> new ScoredTitle(target, score(input, target)))
+                .map(target -> new ScoredTitle(target, score(inputWords, target)))
                 .filter(scored -> scored.q() > 0.0)
                 .max(Comparator.comparingDouble(ScoredTitle::q))
                 .map(ScoredTitle::title)
@@ -36,8 +37,7 @@ public class Normaliser {
 
     private record ScoredTitle(String title, double q) {}
 
-    private static double score(String input, String target) {
-        Set<String> inputWords = Set.copyOf(Arrays.asList(words(input)));
+    private static double score(Set<String> inputWords, String target) {
         String[] targetWords = words(target);
         long matched = 0;
         for (String word : targetWords) {
