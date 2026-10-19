@@ -13,6 +13,7 @@ Requires JDK 25. The Maven wrapper downloads Maven itself.
 ./mvnw test           # run the unit tests
 ./mvnw clean package  # build the jar into target/
 ./mvnw -q compile exec:java  # print the normalised title for a few example inputs
+./mvnw -q compile exec:java -Dexec.args="'Civil engineer' Barista"  # or for your own inputs
 ```
 
 On Windows, use `mvnw.cmd` instead of `./mvnw`.
