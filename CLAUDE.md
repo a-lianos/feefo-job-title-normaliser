@@ -25,6 +25,7 @@ Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
 
 - `./mvnw test`: run the unit tests
 - `./mvnw clean package`: full build
+- `./mvnw -q compile exec:java`: run the example `Main`
 
 ## Conventions
 
