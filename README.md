@@ -60,3 +60,9 @@ against each other while `Normaliser` itself doesn't change.
 - The no-match threshold is fixed in `Normaliser` (q > 0.0), but different strategies may need
   different thresholds. For example, a fuzzy strategy that rarely returns exactly 0.0 would almost
   never report no match.
+- Locale and Unicode handling is out of scope for now. Lowercasing uses `Locale.ROOT`, so the JVM's
+  default locale doesn't change results, but there is nothing beyond that: non-ASCII whitespace
+  such as a non-breaking space doesn't separate words, accents aren't folded ("Ingénieur" doesn't
+  match "ingenieur"), composed and decomposed forms of the same character aren't unified, case
+  folding is plain lowercasing (so "STRASSE" doesn't match "Straße"), and non-English titles aren't
+  translated.
