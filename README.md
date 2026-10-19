@@ -47,6 +47,9 @@ against each other while `Normaliser` itself doesn't change.
   strategies never see null or blank input.
 - An empty target list or a blank target title is a configuration error, so the `Normaliser`
   constructor rejects it straight away rather than returning "" for every input later.
+- Anything other than a letter or digit separates words, so "Software-engineer" and "Engineer,
+  Software" both match "Software engineer"; word order doesn't matter. Symbols are dropped, so C#
+  and C++ are read as C; no target title depends on them.
 
 ## Decisions
 
@@ -63,8 +66,7 @@ against each other while `Normaliser` itself doesn't change.
   different thresholds. For example, a fuzzy strategy that rarely returns exactly 0.0 would almost
   never report no match.
 - Locale and Unicode handling is out of scope for now. Lowercasing uses `Locale.ROOT`, so the JVM's
-  default locale doesn't change results, but there is nothing beyond that: non-ASCII whitespace
-  such as a non-breaking space doesn't separate words, accents aren't folded ("Ingénieur" doesn't
-  match "ingenieur"), composed and decomposed forms of the same character aren't unified, case
-  folding is plain lowercasing (so "STRASSE" doesn't match "Straße"), and non-English titles aren't
-  translated.
+  default locale doesn't change results, but there is nothing beyond that: accents aren't folded
+  ("Ingénieur" doesn't match "ingenieur"), composed and decomposed forms of the same character
+  aren't unified, case folding is plain lowercasing (so "STRASSE" doesn't match "Straße"), and
+  non-English titles aren't translated.

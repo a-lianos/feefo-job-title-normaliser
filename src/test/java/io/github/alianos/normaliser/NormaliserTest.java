@@ -18,12 +18,15 @@ class NormaliserTest {
 
     @ParameterizedTest(name = "{0} -> {1}")
     @CsvSource({
-        "Java engineer,    Software engineer",
-        "C# engineer,      Software engineer",
-        "Accountant,       Accountant",
-        "Chief Accountant, Accountant",
+        "Java engineer,        Software engineer",
+        "C# engineer,          Software engineer",
+        "Accountant,           Accountant",
+        "Chief Accountant,     Accountant",
+        "Software-engineer,    Software engineer",
+        "'Engineer, Software', Software engineer",
+        "Accountant (London),  Accountant",
     })
-    void normalisesTheBriefsExamples(String input, String expected) {
+    void normalisesTypicalTitles(String input, String expected) {
         assertEquals(expected, new Normaliser().normalise(input));
     }
 
