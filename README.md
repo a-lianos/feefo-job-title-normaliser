@@ -53,9 +53,16 @@ are educated guesses rather than findings, and real data could overturn any of t
 - Anything other than a letter or digit separates words, so "Software-engineer" and "Engineer,
   Software" both match "Software engineer"; word order doesn't matter. Symbols are dropped, so C#
   and C++ are read as C; no target title depends on them.
+- A word within roughly one or two typos of a target word counts as that word, so "Acountant" and
+  "Architects" both match. Precisely, word similarity is 1 - edit distance / longer word length,
+  and anything below 0.75 counts as no match. This catches some related words but not others:
+  "Architecture" matches Architect and "Accounting" matches Accountant, but "Engineering" doesn't
+  match engineer.
 
 ## Decisions
 
+- [ADR 0001](docs/adr/0001-use-commons-text-for-fuzzy-matching.md): use Apache Commons Text's
+  Levenshtein distance for fuzzy matching.
 - The input is split into words once per target, not once per `normalise` call. An earlier commit
   split it once per call, which was a single cheap line while scoring lived in `Normaliser`.
   Extracting `ScoringStrategy` undid that on purpose. Keeping it would have meant either passing
@@ -65,9 +72,10 @@ are educated guesses rather than findings, and real data could overturn any of t
 
 ## Limits and next steps
 
-- The no-match threshold is fixed in `Normaliser` (q > 0.0), but different strategies may need
-  different thresholds. For example, a fuzzy strategy that rarely returns exactly 0.0 would almost
-  never report no match.
+- The no-match threshold is fixed in `Normaliser` (q > 0.0), so each strategy must return exactly
+  0.0 for no match. `LevenshteinWordStrategy` does this with its own word similarity floor;
+  otherwise every unrelated word would score a little and nothing would be "no match". A shared,
+  configurable threshold may be worth adding if more strategies need one.
 - Locale and Unicode handling is out of scope for now. Lowercasing uses `Locale.ROOT`, so the JVM's
   default locale doesn't change results, but there is nothing beyond that: accents aren't folded
   ("Ingénieur" doesn't match "ingenieur"), composed and decomposed forms of the same character

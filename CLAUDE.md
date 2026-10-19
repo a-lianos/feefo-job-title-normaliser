@@ -34,5 +34,6 @@ Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
 - Comments only on public interfaces or to explain a non-obvious why.
 - When a step makes an assumption about behaviour, add one bullet to the README's "Assumptions"
   section in the same commit.
+- A new external library needs an ADR in docs/adr/ in the same commit.
 - Pragmatism over cleverness: no speculative abstractions, no features the step didn't ask for.
 - Use `tmp/` (git-ignored) for scratch files.

@@ -25,9 +25,21 @@ class NormaliserTest {
         "Software-engineer,    Software engineer",
         "'Engineer, Software', Software engineer",
         "Accountant (London),  Accountant",
+        //typos
+        "Acountant,            Accountant",
+        "Sofware engineer,     Software engineer",
+        "Architekt,            Architect",
+        "Architects,           Architect",
+        "Accountants,          Accountant",
     })
     void normalisesTypicalTitles(String input, String expected) {
         assertEquals(expected, new Normaliser().normalise(input));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Plumber", "!!!", "Engineering"})
+    void returnsEmptyWhenNoTargetMatches(String input) {
+        assertEquals("", new Normaliser().normalise(input));
     }
 
     @Test
