@@ -6,6 +6,12 @@ to the best-matching target title ("Architect", "Software engineer", "Quantity s
 
 Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
 
+## Architecture
+
+- `io.github.alianos.normaliser`: `Normaliser`, which selects the best target title by q.
+- `io.github.alianos.normaliser.scoring`: `ScoringStrategy` (computes q) and its implementations,
+  e.g. `WordMatchStrategy`.
+
 ## Commands
 
 - `./mvnw test`: run the unit tests

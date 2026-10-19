@@ -1,12 +1,18 @@
 package io.github.alianos.normaliser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class NormaliserTest {
+
+    private static final List<String> TARGETS = List.of("Alpha", "Beta", "Gamma");
 
     @ParameterizedTest(name = "{0} -> {1}")
     @CsvSource({
@@ -20,14 +26,38 @@ class NormaliserTest {
     }
 
     @Test
-    void returnsEmptyWhenNoTargetMatches() {
-        assertEquals("", new Normaliser().normalise("Plumber"));
+    void highestScoreWins() {
+        Normaliser normaliser = new Normaliser(TARGETS, (input, target) -> target.equals("Beta") ? 0.9 : 0.1);
+
+        assertEquals("Beta", normaliser.normalise("anything"));
     }
 
-    // TODO: relies on today's word coverage scoring both targets 0.5; nothing here asserts the
-    // tie. Rework once targets and scoring are injectable, so the tie can be set up explicitly.
     @Test
-    void prefersTheFirstTargetOnATie() {
-        assertEquals("Software engineer", new Normaliser().normalise("Software quantity"));
+    void tiesGoToTheFirstTargetInListOrder() {
+        Normaliser normaliser = new Normaliser(TARGETS, (input, target) -> target.equals("Alpha") ? 0.1 : 0.5);
+
+        assertEquals("Beta", normaliser.normalise("anything"));
+    }
+
+    @Test
+    void returnsEmptyWhenTheBestScoreIsZero() {
+        Normaliser normaliser = new Normaliser(TARGETS, (input, target) -> 0.0);
+
+        assertEquals("", normaliser.normalise("anything"));
+    }
+
+    @Test
+    void returnsTheConfiguredTargetsCasing() {
+        Normaliser normaliser = new Normaliser(List.of("Software engineer"), (input, target) -> 1.0);
+
+        assertEquals("Software engineer", normaliser.normalise("SOFTWARE ENGINEER"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {-0.1, 1.1, Double.NaN})
+    void throwsWhenTheStrategyReturnsAScoreOutsideTheRange(double q) {
+        Normaliser normaliser = new Normaliser(TARGETS, (input, target) -> q);
+
+        assertThrows(IllegalStateException.class, () -> normaliser.normalise("anything"));
     }
 }
