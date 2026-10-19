@@ -19,7 +19,7 @@ Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
 
 - `io.github.alianos.normaliser`: `Normaliser`, which selects the best target title by q.
 - `io.github.alianos.normaliser.scoring`: `ScoringStrategy` (computes q) and its implementations,
-  e.g. `WordMatchStrategy`.
+  e.g. `LevenshteinWordStrategy`.
 
 ## Commands
 
