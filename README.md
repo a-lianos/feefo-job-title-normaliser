@@ -24,7 +24,6 @@ On Windows, use `mvnw.cmd` instead of `./mvnw`.
 Normaliser n = new Normaliser();
 String input = "Java engineer";
 String normalisedTitle = n.normalise(input);
-// output normalisedTitle
 ```
 
 ## Design
@@ -32,10 +31,10 @@ String normalisedTitle = n.normalise(input);
 `Normaliser` owns selection: it asks a `ScoringStrategy` for q against each target title, picks the
 highest, and applies the tie and no-match rules. The strategy owns scoring and nothing else. A new
 matching algorithm is a new `ScoringStrategy` implementation passed to
-`Normaliser(List<String> targetTitles, ScoringStrategy strategy)`. This split has two benefits.
+`Normaliser(List<String> targetTitles, ScoringStrategy strategy)`. This split has a few benefits.
 First, it makes the code testable: `Normaliser`'s selection rules are pinned with stub strategies,
-and each strategy's scoring is tested on its own. Second, we can benchmark different strategies
-against each other while `Normaliser` itself doesn't change.
+and each strategy's scoring is tested on its own. Second, strategies can be composed and decorated.
+Third, strategies can be compared against each other while `Normaliser` itself doesn't change.
 
 Strategies chain rather than grow features: a strategy can wrap another and change the input before
 passing it on. The default is `new WordMappingStrategy(new LevenshteinWordStrategy())`.
@@ -43,10 +42,32 @@ passing it on. The default is `new WordMappingStrategy(new LevenshteinWordStrate
 ("Python" adds "software", "QS" adds "quantity surveyor"), and `LevenshteinWordStrategy` does the
 scoring.
 
-## Assumptions
+## Testing
 
-Without a large database of classified example titles to test against, the matching rules below
-are educated guesses rather than findings, and real data could overturn any of them.
+- `NormaliserTest` covers the brief's examples and other typical titles end to end, and pins the
+  selection rules (highest q wins, ties, no match, null and blank input, configuration errors) with
+  stub strategies.
+- `LevenshteinWordStrategyTest` covers word scoring: case, word order, separators, typos and
+  plurals, and where the similarity floor cuts off.
+- `WordMappingStrategyTest` covers how mapped words are added to the input, constructor validation,
+  and the default mapping's specialisms, synonyms and abbreviations.
+
+## Scope
+
+The brief gives four target titles and four examples. The solution aims to be a clean, extensible
+structure that handles those and the obvious variations of them: case, word order, punctuation,
+extra words such as seniority, typos and plurals, and a small set of specialisms, synonyms and
+abbreviations.
+
+Matching is lexical: it compares words, not meanings. A title that shares a generic word with a
+target matches that target, so "Civil engineer" and "Property developer" both become "Software
+engineer", and "Quality manager" is close enough in spelling to become "Quantity surveyor". Telling
+these apart needs domain knowledge, such as a curated dictionary of job titles, a stemmer or semantic
+matching. Each of these should be chosen and tuned against a labelled sample of real titles, since a
+rule that fixes one title can break others. They are left out until such data exists, and each would
+be a new `ScoringStrategy` or mapping, with no change to `Normaliser`.
+
+## Assumptions
 
 - "Best match" means the target with the highest q. If no target scores above 0.0, `normalise`
   returns "" rather than null or an exception, so the brief's `String` signature and sample code
@@ -58,45 +79,30 @@ are educated guesses rather than findings, and real data could overturn any of t
   strategies never see null or blank input.
 - An empty target list or a blank target title is a configuration error, so the `Normaliser`
   constructor rejects it straight away rather than returning "" for every input later.
-- Anything other than a letter or digit separates words, so "Software-engineer" and "Engineer,
-  Software" both match "Software engineer"; word order doesn't matter. Symbols are dropped, so C#
-  and C++ are read as C; no target title depends on them.
 - A word within roughly one or two typos of a target word counts as that word, so "Acountant" and
   "Architects" both match. Precisely, word similarity is 1 - edit distance / longer word length,
   and anything below 0.75 counts as no match. This catches some related words but not others:
   "Architecture" matches Architect and "Accounting" matches Accountant, but "Engineering" doesn't
   match engineer.
 - The default word mapping (for example, Python, Frontend and SWE to software engineer, QS to
-  quantity surveyor, ACCA to accountant) is an illustration, not curated domain knowledge. Input
-  words must match a mapping key exactly; typos in them aren't tolerated.
-- Whether "Developer" alone means software engineer is a product decision, and the answer here is
-  no: it maps to "engineer" only, because it could mean a property developer. "Python developer"
-  and "Software developer" score a full match, but "Developer" alone scores 0.5, the same as
-  "Engineer" alone. Semantic mapping would solve this problem properly, but it is assumed that is
-  not the point of this exercise.
+  quantity surveyor, ACCA to accountant) shows the mechanism rather than covering the domain.
+  Input words must match a mapping key exactly; typos in them aren't tolerated.
+- "Developer" alone maps to "engineer" rather than "software engineer", because it can also mean a
+  property developer. "Python developer" and "Software developer" score a full match, while
+  "Developer" alone scores 0.5, the same as "Engineer" alone.
+- Text handling is English-only: lowercasing uses `Locale.ROOT`, and accents aren't folded.
 
 ## Decisions
 
 - [ADR 0001](docs/adr/0001-use-commons-text-for-fuzzy-matching.md): use Apache Commons Text's
   Levenshtein distance for fuzzy matching.
-- The input is split into words once per target, not once per `normalise` call. An earlier commit
-  split it once per call, which was a single cheap line while scoring lived in `Normaliser`.
-  Extracting `ScoringStrategy` undid that on purpose. Keeping it would have meant either passing
-  pre-split words through the interface, which ties every strategy to word matching, or adding a
-  per-input preparation step to the interface. With four short targets the saving isn't worth any
-  interface complexity at this stage.
 
-## Limits and next steps
+## Next steps
 
+- Collect a labelled sample of real titles. Then, build an evaluation harness that can test
+  how changes affect the whole scope. Use the harness to to tune the similarity floor and to choose
+  between richer strategies such as a title dictionary, a stemmer or semantic matching.
 - The no-match threshold is fixed in `Normaliser` (q > 0.0), so each strategy must return exactly
-  0.0 for no match. `LevenshteinWordStrategy` does this with its own word similarity floor;
-  otherwise every unrelated word would score a little and nothing would be "no match". A shared,
-  configurable threshold may be worth adding if more strategies need one.
-- Locale and Unicode handling is out of scope for now. Lowercasing uses `Locale.ROOT`, so the JVM's
-  default locale doesn't change results, but there is nothing beyond that: accents aren't folded
-  ("Ingénieur" doesn't match "ingenieur"), composed and decomposed forms of the same character
-  aren't unified, case folding is plain lowercasing (so "STRASSE" doesn't match "Straße"), and
-  non-English titles aren't translated.
-- The scoring isn't tuned. Changes such as a different similarity floor can't be shown to improve
-  results without a labelled sample of real titles, so they're left until one exists. For example,
-  the 0.75 floor lets "Quality manager" match Quantity surveyor.
+  0.0 for no match. A shared, configurable threshold may be worth adding if more strategies need
+  one. A QualityScore should also be returned instead of a double; that would prevent having to 
+  throw an error from the normaliser, as errors would have to be handled inside the ScoringStrategy.

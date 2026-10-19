@@ -14,7 +14,7 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 public class LevenshteinWordStrategy implements ScoringStrategy {
 
     // Without a floor every unrelated word scores a little, so no input would ever be "no match".
-    private static final double SIMILARITY_FLOOR = 0.75; //TODO: arbitrarily chosen. Can't be tuned with a proper annotated sample.
+    private static final double SIMILARITY_FLOOR = 0.75; //TODO: arbitrarily chosen. Can't be tuned without a proper annotated sample.
 
     private static final LevenshteinDistance DISTANCE = LevenshteinDistance.getDefaultInstance();
 
