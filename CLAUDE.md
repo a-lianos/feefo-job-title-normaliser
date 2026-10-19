@@ -6,6 +6,15 @@ to the best-matching target title ("Architect", "Software engineer", "Quantity s
 
 Maven project, JDK 25, JUnit 5. Base package `io.github.alianos.normaliser`.
 
+## Glossary
+
+- **Input title**: the free-text job title passed to `normalise` (`inputTitle` in code).
+- **Target title**: one of the configured titles the input can map to (`targetTitle` in code).
+- **Quality score (q)**: how well an input title matches one target title, from 0.0 to 1.0,
+  computed by a `ScoringStrategy`.
+- **No match**: no target title scores above 0.0, or the input is null or blank. `normalise`
+  returns "".
+
 ## Architecture
 
 - `io.github.alianos.normaliser`: `Normaliser`, which selects the best target title by q.
