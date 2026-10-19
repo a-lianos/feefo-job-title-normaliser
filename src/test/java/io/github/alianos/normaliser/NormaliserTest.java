@@ -76,6 +76,24 @@ class NormaliserTest {
         assertEquals("Alpha", normaliser.normalise("anything"));
     }
 
+    @Test
+    void rejectsANullStrategy() {
+        assertThrows(NullPointerException.class, () -> new Normaliser(TARGETS, null));
+    }
+
+    @Test
+    void rejectsAnEmptyTargetList() {
+        assertThrows(IllegalArgumentException.class, () -> new Normaliser(List.of(), (input, target) -> 1.0));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    void rejectsABlankTarget(String blank) {
+        List<String> targets = List.of("Alpha", blank);
+
+        assertThrows(IllegalArgumentException.class, () -> new Normaliser(targets, (input, target) -> 1.0));
+    }
+
     @ParameterizedTest
     @ValueSource(doubles = {-0.1, 1.1, Double.NaN})
     void throwsWhenTheStrategyReturnsAScoreOutsideTheRange(double q) {

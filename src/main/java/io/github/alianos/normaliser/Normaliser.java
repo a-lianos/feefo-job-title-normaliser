@@ -4,6 +4,7 @@ import io.github.alianos.normaliser.scoring.ScoringStrategy;
 import io.github.alianos.normaliser.scoring.WordMatchStrategy;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Maps a free-text job title to the best-matching of a fixed set of target titles.
@@ -24,10 +25,19 @@ public class Normaliser {
     /**
      * Creates a normaliser for the given target titles, scored by the given strategy.
      * On a tie, the target that comes first in the list wins.
+     *
+     * @throws NullPointerException if the list, any target or the strategy is null
+     * @throws IllegalArgumentException if the list is empty or any target is blank
      */
     public Normaliser(List<String> targetTitles, ScoringStrategy strategy) {
+        this.strategy = Objects.requireNonNull(strategy, "strategy");
         this.targetTitles = List.copyOf(targetTitles);
-        this.strategy = strategy;
+        if (this.targetTitles.isEmpty()) {
+            throw new IllegalArgumentException("targetTitles must not be empty");
+        }
+        if (this.targetTitles.stream().anyMatch(String::isBlank)) {
+            throw new IllegalArgumentException("targetTitles must not contain a blank title: " + this.targetTitles);
+        }
     }
 
     /**

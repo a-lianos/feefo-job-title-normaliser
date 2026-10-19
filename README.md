@@ -45,6 +45,8 @@ against each other while `Normaliser` itself doesn't change.
 - Null or blank input returns "", the same as no match, rather than throwing: free-text fields are
   often empty, and normalising one shouldn't crash. `Normaliser` checks this before scoring, so
   strategies never see null or blank input.
+- An empty target list or a blank target title is a configuration error, so the `Normaliser`
+  constructor rejects it straight away rather than returning "" for every input later.
 
 ## Decisions
 
