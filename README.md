@@ -36,6 +36,12 @@ First, it makes the code testable: `Normaliser`'s selection rules are pinned wit
 and each strategy's scoring is tested on its own. Second, we can benchmark different strategies
 against each other while `Normaliser` itself doesn't change.
 
+Strategies chain rather than grow features: a strategy can wrap another and change the input before
+passing it on. The default is `new WordMappingStrategy(new LevenshteinWordStrategy())`.
+`WordMappingStrategy` adds the target words that specialisms, synonyms and abbreviations stand for
+("Python" adds "software", "QS" adds "quantity surveyor"), and `LevenshteinWordStrategy` does the
+scoring.
+
 ## Assumptions
 
 Without a large database of classified example titles to test against, the matching rules below
@@ -59,6 +65,14 @@ are educated guesses rather than findings, and real data could overturn any of t
   and anything below 0.75 counts as no match. This catches some related words but not others:
   "Architecture" matches Architect and "Accounting" matches Accountant, but "Engineering" doesn't
   match engineer.
+- The default word mapping (for example, Python, Frontend and SWE to software engineer, QS to
+  quantity surveyor, ACCA to accountant) is an illustration, not curated domain knowledge. Input
+  words must match a mapping key exactly; typos in them aren't tolerated.
+- Whether "Developer" alone means software engineer is a product decision, and the answer here is
+  no: it maps to "engineer" only, because it could mean a property developer. "Python developer"
+  and "Software developer" score a full match, but "Developer" alone scores 0.5, the same as
+  "Engineer" alone. Semantic mapping would solve this problem properly, but it is assumed that is
+  not the point of this exercise.
 
 ## Decisions
 

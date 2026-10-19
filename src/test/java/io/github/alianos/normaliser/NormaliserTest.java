@@ -31,6 +31,11 @@ class NormaliserTest {
         "Architekt,            Architect",
         "Architects,           Architect",
         "Accountants,          Accountant",
+        //word mapping
+        "Python developer,     Software engineer",
+        "Programmer,           Software engineer",
+        "QS,                   Quantity surveyor",
+        "ACCA,                 Accountant",
     })
     void normalisesTypicalTitles(String input, String expected) {
         assertEquals(expected, new Normaliser().normalise(input));

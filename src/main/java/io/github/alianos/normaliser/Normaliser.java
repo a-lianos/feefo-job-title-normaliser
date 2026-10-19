@@ -2,6 +2,7 @@ package io.github.alianos.normaliser;
 
 import io.github.alianos.normaliser.scoring.ScoringStrategy;
 import io.github.alianos.normaliser.scoring.LevenshteinWordStrategy;
+import io.github.alianos.normaliser.scoring.WordMappingStrategy;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -17,9 +18,12 @@ public class Normaliser {
     private final List<String> targetTitles;
     private final ScoringStrategy strategy;
 
-    /** Creates a normaliser for the default target titles, scored by {@link LevenshteinWordStrategy}. */
+    /**
+     * Creates a normaliser for the default target titles, scored by {@link LevenshteinWordStrategy}
+     * after the default {@link WordMappingStrategy} mapping.
+     */
     public Normaliser() {
-        this(DEFAULT_TARGET_TITLES, new LevenshteinWordStrategy());
+        this(DEFAULT_TARGET_TITLES, new WordMappingStrategy(new LevenshteinWordStrategy()));
     }
 
     /**
