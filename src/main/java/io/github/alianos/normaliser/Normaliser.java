@@ -47,24 +47,24 @@ public class Normaliser {
      *
      * @throws IllegalStateException if the strategy returns a q outside [0.0, 1.0]
      */
-    public String normalise(String input) {
-        if (input == null || input.isBlank()) {
+    public String normalise(String inputTitle) {
+        if (inputTitle == null || inputTitle.isBlank()) {
             return "";
         }
         return targetTitles.stream()
-                .map(target -> new ScoredTitle(target, score(input, target)))
+                .map(targetTitle -> new ScoredTitle(targetTitle, score(inputTitle, targetTitle)))
                 .filter(scored -> scored.q() > 0.0)
                 .max(Comparator.comparingDouble(ScoredTitle::q))
                 .map(ScoredTitle::title)
                 .orElse("");
     }
 
-    private double score(String input, String target) {
-        double q = strategy.score(input, target);
+    private double score(String inputTitle, String targetTitle) {
+        double q = strategy.score(inputTitle, targetTitle);
         // Written as a negated range check so NaN fails it too.
         if (!(q >= 0.0 && q <= 1.0)) {
             throw new IllegalStateException(
-                    "Strategy returned q=" + q + " for target \"" + target + "\"; expected [0.0, 1.0]");
+                    "Strategy returned q=" + q + " for target \"" + targetTitle + "\"; expected [0.0, 1.0]");
         }
         return q;
     }
