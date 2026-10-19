@@ -3,6 +3,7 @@ package io.github.alianos.normaliser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,16 @@ class NormaliserTest {
         Normaliser normaliser = new Normaliser(List.of("Software engineer"), (input, target) -> 1.0);
 
         assertEquals("Software engineer", normaliser.normalise("SOFTWARE ENGINEER"));
+    }
+
+    @Test
+    void ignoresChangesToTheTargetListAfterConstruction() {
+        List<String> targets = new ArrayList<>(List.of("Alpha"));
+        Normaliser normaliser = new Normaliser(targets, (input, target) -> 1.0);
+
+        targets.set(0, "Beta");
+
+        assertEquals("Alpha", normaliser.normalise("anything"));
     }
 
     @ParameterizedTest

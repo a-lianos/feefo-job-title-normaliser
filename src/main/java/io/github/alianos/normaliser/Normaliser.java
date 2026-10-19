@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Normaliser {
 
-    private static final List<String> DEFAULT_TARGETS =
+    private static final List<String> DEFAULT_TARGET_TITLES =
             List.of("Architect", "Software engineer", "Quantity surveyor", "Accountant");
 
     private final List<String> targetTitles;
@@ -18,7 +18,7 @@ public class Normaliser {
 
     /** Creates a normaliser for the default target titles, scored by {@link WordMatchStrategy}. */
     public Normaliser() {
-        this(DEFAULT_TARGETS, new WordMatchStrategy());
+        this(DEFAULT_TARGET_TITLES, new WordMatchStrategy());
     }
 
     /**
@@ -26,7 +26,7 @@ public class Normaliser {
      * On a tie, the target that comes first in the list wins.
      */
     public Normaliser(List<String> targetTitles, ScoringStrategy strategy) {
-        this.targetTitles = targetTitles;
+        this.targetTitles = List.copyOf(targetTitles);
         this.strategy = strategy;
     }
 
